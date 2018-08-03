@@ -16,7 +16,7 @@ metadata:
     catgory: CI
     alauda.test: "true"
 spec:
-  engine: grsaph                # 当前支持渲染类型
+  engine: grssssssssssaph                # 当前支持渲染类型
   withSCM: true                #表示是否需要代码仓库 ， 当设定为true时，会在创建流水线时，要求用户输入仓库信息
   agent:                                     # 可以为空， 表示any,  release 1.12 支持
     label: java

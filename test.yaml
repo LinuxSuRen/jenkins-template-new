@@ -16,12 +16,12 @@ metadata:
     catgory: CI
     alauda.test: "true"
 spec:
-  engine: graph                # 当前支持渲染类型
+  engine: grsaph                # 当前支持渲染类型
   withSCM: true                #表示是否需要代码仓库 ， 当设定为true时，会在创建流水线时，要求用户输入仓库信息
   agent:                                     # 可以为空， 表示any,  release 1.12 支持
     label: java
   stages:                      # 对应 jenkinsfile 中的 stages
-    - namesdfsf: Clone              # 对应jenkinsfile中的一个 stage, name 对应 stage的名称
+    - name: Clone              # 对应jenkinsfile中的一个 stage, name 对应 stage的名称
       tasks:                   # 一个 stage 下可能会有多个tasks 也就是有多个 stage， 当有多个 task时， 表示这几个task是并行的。
         - name: Clone          # 对应 jenkinsfile中的一个 stage， 当tasks 只有这一个时，则使用该名称做为当前stage的名称
           kind: PipelineTaskTemplate

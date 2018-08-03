@@ -1,0 +1,310 @@
+apiVersion: devops.alauda.io/v1alpha1   #当前支持版本
+kind: PipelineTemplate  
+metadata:
+  name: PipelineTest2                # 该名称需要在当前仓库中保持唯一
+  namespace: lq-project
+  annotations:
+    alauda.io/displayName.zh-CN: 构建
+    alauda.io/displayName.en: Build docker image
+    alauda.io/description.zh-CN: 克隆代码并构建镜像
+    alauda.io/description.en: Clone code and builds a docker image
+    alauda.io/readme.zh-CN: 克隆代码并构建镜像
+    alauda.io/readme.en: Clone code and builds a docker image
+    alauda.io/version: v0.1
+    alauda.io/style.icon: build
+  labels:
+    catgory: CI
+    alauda.test: "true"
+spec:
+  engine: graph                # 当前支持渲染类型
+  withSCM: true                #表示是否需要代码仓库 ， 当设定为true时，会在创建流水线时，要求用户输入仓库信息
+  agent:                                     # 可以为空， 表示any,  release 1.12 支持
+    label: java
+  stages:                      # 对应 jenkinsfile 中的 stages
+    - name: Clone              # 对应jenkinsfile中的一个 stage, name 对应 stage的名称
+      tasks:                   # 一个 stage 下可能会有多个tasks 也就是有多个 stage， 当有多个 task时， 表示这几个task是并行的。
+        - name: Clone          # 对应 jenkinsfile中的一个 stage， 当tasks 只有这一个时，则使用该名称做为当前stage的名称
+          kind: PipelineTaskTemplate
+          type: public/clone   # 使用的 task的名称， 需要使用全名称。 也就是  导入的   模板仓库的名字/task name
+    - name: BuildImage1
+      tasks:
+        - name: BuildImage
+          kind: ClusterPipelineTaskTemplate
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: public/alaudaBuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments:
+            - name: ENV
+              value: dev
+        - name: BuildImagitasktsake
+          kind: ClusterPipelineTaskTemplate
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: public/alaudaBuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments:
+            - name: ENV
+              value: dev
+        - name: BuildImage
+          kind: ClusterPisdfsdfsipelineTaskTemplate
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: public/alaudaBuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments:
+            - name: ENV
+              value: dev
+    - name: BuildImage2
+      tasks:
+        - name: BuildImage
+          kind: ClusterPipelineTaskTemplate
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: public/alaudaBuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments: 
+            - name: ENV
+              value: dev
+  parameters:                  # 流水线参数化执行的参数列表
+    - name: name
+      type: string
+      value: "bob"
+      description: "how triggered this job"
+  arguments:                   # 参见动态表单参数定义部分
+    - displayName:             # 表示一个表单分区（组）
+        zh-CN: "基本信息"       # 当前组的显示名称
+        en: "Basic Info"
+      items:                   # 组下的所有参数数组，更详细的参数说明，请 参见动态表单参数定义部分
+        - name: "dockerfilePath"
+          schema:
+            type: string
+          binding:                          # 表示该值，将来将会对应到哪个 task的哪个参数上。可以对应多个。
+            - BuildImage.args.dockerfilePath    # 格式为   {stageName}.args.{argumentName}, 当前的含义就是，客户端填写的 dockerfilePath，将会传递给 BuildImage 这个 task 的 dockerfilePath参数。
+          display:
+            type: string
+            name:
+              zh-CN: "Dockerfile路径"
+              en: "Dockerfile's path"
+          required: true
+          default: "./"
+          value: ""
+        - name: "contextDir"
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.contextDir
+          display:
+            type: string
+            name:
+              zh-CN: "构建路径"
+              en: "Build context"
+          required: true
+          default: "./"
+          value: ""
+    - displayName:
+        zh-CN: "配置持续集成"
+        en: "CI Configuration"
+      items:
+        - name: "useYaml"
+          schema:
+            type: boolean
+          binding:
+            - BuildImage.args.useYaml
+          display:
+            type: boolean
+            name:
+              zh-CN: "使用 YAML 构建的镜像"
+              en: "Use YAML for CI container"
+            description:
+              zh-CN: 若使用自定义YAML镜像，则会使用您在代码仓库的alaudaci.yml中指定的镜像作为持续集成的运行环境。
+              en: If enabled will use the alaudaci.yml file in the code repository to start a CI container.
+          required: false
+          value: ""
+        - name: "ciYamlFile"
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.ciYamlFile
+          display:
+            type: string
+            name:
+              zh-CN: "alaudaci.yaml 文件路径"
+              en: "alaudaci.yml's path"
+          required: false
+          default: "./alaudaci.yml"
+          relation:
+            - action: hidden
+              when:
+                name: useYaml
+                value: false
+            - action: show
+              when:
+                name: useYaml
+                value: true
+          validation:
+            pattern: .*\.yml$
+          value: ""
+        - name: "ciImage"
+          schema:
+            type: alauda.io/imagerepositorymix
+          binding:
+            - BuildImage.args.ciImage
+          display:
+            type: alauda.io/imagerepositorymix
+            name:
+              zh-CN: "CI镜像"
+              en: "CI image"
+          required: false
+          relation:
+            - action: hidden
+              when:
+                name: useYaml
+                value: true
+            - action: show
+              when:
+                name: useYaml
+                value: false
+          value: ""
+        - name: "ciImageTag"
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.ciImageTag
+          display:
+            type: alauda.io/imagetag
+            related: ciImage
+            name:
+              zh-CN: "CI镜像Tag"
+              en: "CI image tag"
+          required: false
+          relation:
+            - action: hidden
+              when:
+                name: useYaml
+                value: true
+            - action: show
+              when:
+                name: useYaml
+                value: false
+          value: ""
+        - name: ciImageRegistryCredentialsId
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.ciImageRegistryCredentialsId
+          display:
+            type: alauda.io/jenkinscredentials
+            related: jenkins_integration_id
+            name:
+              zh-CN: "CI镜像：镜像中心凭据"
+              en: "CI image: Registry credentials"
+          required: false
+          value: ""
+        - name: "ciCommands"
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.ciCommands
+          display:
+            type: shellscripts
+            name:
+              zh-CN: "自定义命令"
+              en: "CI commands"
+          required: false
+          relation:
+            - action: hidden
+              when:
+                name: useYaml
+                value: true
+            - action: show
+              when:
+                name: useYaml
+                value: false
+          value: ""
+    - displayName:
+        zh-CN: 配置镜像仓库
+        en: Image Repository Configuration
+      items:
+        - name: "image"
+          schema:
+            type: alauda.io/imagerepositorymix
+          binding:
+            - BuildImage.args.image
+          display:
+            type: alauda.io/imagerepositorymix
+            name:
+              zh-CN: "镜像仓库"
+              en: "Image repository"
+            description:
+              zh-CN: "构建生成的镜像"
+              en: "Image repository to store the built image"
+          required: true
+          value: ""
+        - name: "imageTag"
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.imageTag
+          display:
+            type: string
+            name:
+              zh-CN: "镜像版本"
+              en: "Customized image tag"
+          default: "latest"
+          required: true
+          value: ""
+        - name: imageExtraTag
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.imageExtraTag
+          display:
+            type: string
+            name:
+              zh-CN: "附加版本"
+              en: "Auto generated tag"
+          required: false
+          value: ""
+        - name: imageRegistryCredentialsId
+          schema:
+            type: string
+          binding:
+            - BuildImage.args.imageRegistryCredentialsId
+          display:
+            type: alauda.io/jenkinscredentials
+            related: jenkins_integration_id
+            name:
+              zh-CN: "镜像中心凭据"
+              en: "Registry credentials"
+          required: false
+          value: ""
+        - name: "useImageCache"
+          schema:
+            type: boolean
+          binding:
+            - BuildImage.args.useImageCache
+          display:
+            type: boolean
+            name:
+              zh-CN: "开启镜像缓存"
+              en: "Use image cache"
+          default: "true"
+          required: true
+          value: ""

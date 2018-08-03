@@ -1,6 +1,6 @@
 apiVersion: devops.alauda.io/v1alpha1   #当前支持版本
 kind: PipelineTemplate  
-medtadata:
+metadata:
   name: PipelineTest2                # 该名称需要在当前仓库中保持唯一
   namespace: lq-project
   annotations:
@@ -21,7 +21,7 @@ spec:
   agent:                                     # 可以为空， 表示any,  release 1.12 支持
     label: java
   stages:                      # 对应 jenkinsfile 中的 stages
-    - name: Clone              # 对应jenkinsfile中的一个 stage, name 对应 stage的名称
+    - namesdfsf: Clone              # 对应jenkinsfile中的一个 stage, name 对应 stage的名称
       tasks:                   # 一个 stage 下可能会有多个tasks 也就是有多个 stage， 当有多个 task时， 表示这几个task是并行的。
         - name: Clone          # 对应 jenkinsfile中的一个 stage， 当tasks 只有这一个时，则使用该名称做为当前stage的名称
           kind: PipelineTaskTemplate

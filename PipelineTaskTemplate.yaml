@@ -1,0 +1,80 @@
+apiVersion: devops.alauda.io/v1alpha1
+kind: PipelineTaskTemplate
+metadata:
+  name: BuildImage
+  namespace: default
+  annotations:
+    alauda.io/displayName.zh-CN: 构建
+    alauda.io/displayName.en: BuildImage
+    alauda.io/description.zh-CN: 构建
+    alauda.io/description.en: BuildImage
+    alauda.io/readme.zh-CN: 构建镜像
+    alauda.io/readme.en: BuildImage
+    alauda.io/version: v0.3
+    alauda.io/style.icon:
+  labels:
+    catgory: CI
+spec:
+  engine: gotpl
+  agent:                                     # 可以为空 release 1.12 支持
+    label: java
+  body: |+
+    script{
+      def image = alauda.build().
+        setDockerfileLocation("{{.dockerfilePath}}").
+        setContextPath("{{.contextDir}}").
+        setUseImageCache({{.useImageCache}}).
+        {{- if .useYaml}}
+        withYaml("{{.ciYamlFile}}").
+        {{- else}}
+        withCIImage("{{.ciImage.registry}}/{{.ciImage.repository}}:{{.ciImageTag}}", "{{.ciImageRegistryCredentialsId}}"){
+            sh '''{{.ciCommands}}'''
+        }.
+        {{- end}}
+        setImage("{{.image.registry}}/{{.image.repository}}:{{.imageTag}}").
+        startBuild().
+        startBuildImage()
+      image.withRegistry([
+        credentialsId: "{{.imageRegistryCredentialsId}}",
+        url: "{{.image.registry}}"
+      ]).push("{{.imageExtraTag}}")
+    }
+  exports:                      # 有当前任务模板到处的全局变量
+    - name: CHANGE_LOG
+      description:
+        zh-CN: "changeLog file path"
+        en: "changeLog file path"
+  parameters:                  # 流水线参数化执行的参数列表
+    - name: name
+      type: string
+      value: "bob"
+      description: "how triggered this job"
+  arguments:
+    - name: "dockerfilePath"
+      schema:
+        type: string
+      display:
+        type: string
+        name:
+          zh-CN: "Dockerfile路径"
+          en: "path of Dockerfile"
+      required: true
+      default: ./
+    - name: "ciCommands"
+      schema:
+        type: string
+      display:
+        type: shellscripts
+        name:
+          zh-CN: "自定义命令"
+          en: "ci commands"
+      required: false
+      relation:
+        - action: hidden
+          when:
+            name: useYaml
+            value: true
+  dependencies: # 当前任务模板所依赖的插件名称以及版本，当依赖的插件不存在或者版本较小的话，对应的流水心可能无法创建
+    plugins:
+      - name: Pipeline
+        version: "2.1"

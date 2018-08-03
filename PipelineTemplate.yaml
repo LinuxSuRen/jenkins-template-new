@@ -1,0 +1,42 @@
+apiVersion: devops.alauda.io/v1alpha1   #当前支持版本
+kind: PipelineTemplate  
+metadata:
+  name: alaudaBuildImage                # 该名称需要在当前仓库中保持唯一
+  namespace: default
+  annotations:
+    alauda.io/displayName.zh-CN: 构建
+    alauda.io/displayName.en: Build docker image
+    alauda.io/description.zh-CN: 克隆代码并构建镜像
+    alauda.io/description.en: Clone code and builds a docker image
+    alauda.io/readme.zh-CN: 克隆代码并构建镜像
+    alauda.io/readme.en: Clone code and builds a docker image
+    alauda.io/version: v0.2
+    alauda.io/style.icon: build
+  labels:
+    catgory: CI
+spec:
+  engine: graph                # 当前支持渲染类型
+  withSCM: true                #表示是否需要代码仓库 ， 当设定为true时，会在创建流水线时，要求用户输入仓库信息
+  agent:                                     # 可以为空， 表示any,  release 1.12 支持
+    label: java
+  stages:
+    - name: BuildImage
+      tasks:
+        - name: BuildImage
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: BuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments: 
+            - name: ENV
+              value: dev
+  parameters:                  # 流水线参数化执行的参数列表
+    - name: name
+      type: string
+      value: "bob"
+      description: "how triggered this job"
+  arguments:                   # 参见动态表单参数定义部分

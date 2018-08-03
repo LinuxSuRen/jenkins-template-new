@@ -1,6 +1,6 @@
 apiVersion: devops.alauda.io/v1alpha1   #当前支持版本
 kind: PipelineTemplate  
-metadata:
+medtadata:
   name: PipelineTest2                # 该名称需要在当前仓库中保持唯一
   namespace: lq-project
   annotations:

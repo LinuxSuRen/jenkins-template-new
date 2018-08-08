@@ -2,7 +2,7 @@ apiVersion: devops.alauda.io/v1alpha1   #当前支持版本
 kind: PipelineTemplate  
 metadata:
   name: alaudaBuildImage                # 该名称需要在当前仓库中保持唯一
-  namespace: lq-project
+  namespace: abc
   annotations:
     alauda.io/displayName.zh-CN: 构建
     alauda.io/displayName.en: Build docker image

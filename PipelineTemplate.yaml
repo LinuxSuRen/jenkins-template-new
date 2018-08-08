@@ -43,7 +43,7 @@ spec:
               value: dev
     - name: BuildImage2
       tasks:
-        - name: BuildImage
+        - name: BuildImage2
           agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
             label: java
           type: BuildImage

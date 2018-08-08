@@ -2,7 +2,7 @@ apiVersion: devops.alauda.io/v1alpha1
 kind: PipelineTaskTemplate
 metadata:
   name: BuildImage
-  namespace: default
+  namespace: abc
   annotations:
     alauda.io/displayName.zh-CN: 构建
     alauda.io/displayName.en: BuildImage
@@ -10,7 +10,7 @@ metadata:
     alauda.io/description.en: BuildImage
     alauda.io/readme.zh-CN: 构建镜像
     alauda.io/readme.en: BuildImage
-    alauda.io/version: v0.3
+    alauda.io/version: "0.0.1"
     alauda.io/style.icon:
   labels:
     catgory: CI

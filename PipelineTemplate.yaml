@@ -10,7 +10,7 @@ metadata:
     alauda.io/description.en: Clone code and builds a docker image
     alauda.io/readme.zh-CN: 克隆代码并构建镜像
     alauda.io/readme.en: Clone code and builds a docker image
-    alauda.io/version: "0.3.1"
+    alauda.io/version: "0.3.2"
     alauda.io/style.icon: build
   labels:
     catgory: CI
@@ -28,6 +28,20 @@ spec:
     label: java
   stages:
     - name: BuildImage
+      tasks:
+        - name: BuildImage
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: BuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments: 
+            - name: ENV
+              value: dev
+    - name: BuildImage2
       tasks:
         - name: BuildImage
           agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持

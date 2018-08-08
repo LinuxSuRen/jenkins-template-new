@@ -36,6 +36,19 @@ spec:
           environments: 
             - name: ENV
               value: dev
+        - name: BuildImage1
+          kind: PipelineTaskTemplate
+          agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
+            label: java
+          type: public/BuildImage
+          options:
+            timeout: 3600
+          approve:
+            message: continue?
+            timeout: 20
+          environments: 
+            - name: ENV
+              value: dev
   parameters:                  # 流水线参数化执行的参数列表
     - name: name
       type: string

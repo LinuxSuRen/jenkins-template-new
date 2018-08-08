@@ -15,12 +15,6 @@ metadata:
   labels:
     catgory: CI
     phase1: test1
-    phase2: test2
-    phase3: test3
-    phase4: test4
-    phase5: test5
-    phase6: test6
-    phase7: test7
 spec:
   engine: graph                # 当前支持渲染类型
   withSCM: true                #表示是否需要代码仓库 ， 当设定为true时，会在创建流水线时，要求用户输入仓库信息
@@ -30,9 +24,10 @@ spec:
     - name: BuildImage
       tasks:
         - name: BuildImage
+          kind: PipelineTaskTemplate
           agent:                                     # 可以为空,空时使用 task public/alaudaBuildImage中定义的 label， 不为空时，使用该label  release 1.12 支持
             label: java
-          type: BuildImage
+          type: public/BuildImage
           options:
             timeout: 3600
           approve:

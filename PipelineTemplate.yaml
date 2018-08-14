@@ -10,7 +10,7 @@ metadata:
     alauda.io/description.en: Clone code and builds a docker image
     alauda.io/readme.zh-CN: 克隆代码并构建镜像
     alauda.io/readme.en: Clone code and builds a docker image
-    alauda.io/version: "0.3.4"
+    alauda.io/version: "0.3.5"
     alauda.io/style.icon: build
   labels:
     catgory: CI

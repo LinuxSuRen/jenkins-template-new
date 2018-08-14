@@ -9,11 +9,11 @@ metadata:
     alauda.io/description.en: Clone code and builds a docker image
     alauda.io/readme.zh-CN: 克隆代码并构建镜像
     alauda.io/readme.en: Clone code and builds a docker image
-    alauda.io/version: 0.1.9
+    alauda.io/version: 0.1.10
     alauda.io/style.icon: build,a
   labels:
     category: CICD
-    badges: scmdocker,1
+    badges: scmdocker
 spec:
   engine: graph
   withSCM: true

@@ -9,7 +9,7 @@ metadata:
     alauda.io/description.en: Clone code and builds a docker image
     alauda.io/readme.zh-CN: 克隆代码并构建镜像
     alauda.io/readme.en: Clone code and builds a docker image
-    alauda.io/version: 0.1.6
+    alauda.io/version: 0.1.7
     alauda.io/style.icon: build,a
   labels:
     category: CICD
